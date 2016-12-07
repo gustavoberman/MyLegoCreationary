@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    private int[] fotosArray = {R.drawable.a1,R.drawable.a2,R.drawable.a3,R.drawable.a4,R.drawable.a5,R.drawable.a6};
+    private int[] fotosArray = {R.drawable.cosas,R.drawable.naturaleza,R.drawable.transportes,R.drawable.edificios,R.drawable.doble,R.drawable.elegir};
 
     public void cambiarMensaje(View view) {
         Resources res = getResources();
@@ -30,11 +32,14 @@ public class MainActivity extends AppCompatActivity {
         TextView texto = (TextView) findViewById(R.id.mensaje);
         texto.setText(randomStr);
 
-
         ImageView mostrarImagen = (ImageView) findViewById(R.id.imagen);
+
+
+        //Rotar la imagen como si fuese un dado
+        Animation rotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
+        mostrarImagen.startAnimation(rotate);
+        //Y mostrar una imagen al azar
         mostrarImagen.setImageResource(fotosArray[new Random().nextInt(fotosArray.length)]);
-
-
 
     }
 
