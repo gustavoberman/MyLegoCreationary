@@ -5,9 +5,12 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.CountDownTimer;
 import android.speech.tts.TextToSpeech;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     TextToSpeech t1;
 
+    TextView timerText;
+    boolean timerIsSet=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("dado", rDado);
         savedInstanceState.putInt("carta", rCarta);
+
     }
 
 
@@ -76,6 +82,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate menu
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        //timer
+        MenuItem timerItem = menu.findItem(R.id.break_timer);
+        timerText = (TextView) MenuItemCompat.getActionView(timerItem);
+
+        timerText.setPadding(10, 0, 10, 0); //Or something like that...
+
+
+
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -115,6 +131,10 @@ public class MainActivity extends AppCompatActivity {
         //nombrar resultado dado
         t1.speak(dadoNombre[rDado], TextToSpeech.QUEUE_FLUSH, null);
 
+        if (!timerIsSet) {
+            startTimer(30000, 1000); //One tick every second for 30 seconds
+            timerIsSet = true;
+        }
     }
 
     //tts
@@ -124,6 +144,60 @@ public class MainActivity extends AppCompatActivity {
             t1.shutdown();
         }
         super.onPause();
+    }
+
+
+
+    //timer
+    private void startTimer(long duration, long interval) {
+
+        CountDownTimer timer = new CountDownTimer(duration, interval) {
+
+            @Override
+            public void onFinish() {
+                //TODO Whatever's meant to happen when it finishes
+                t1.speak("Terminó el tiempo!", TextToSpeech.QUEUE_FLUSH, null);
+            }
+
+            @Override
+            public void onTick(long millisecondsLeft) {
+                int secondsLeft = (int) Math.round((millisecondsLeft / (double) 1000));
+                timerText.setText(secondsToString(secondsLeft));
+            }
+        };
+
+        timer.start();
+    }
+
+    private String secondsToString(int improperSeconds) {
+
+        //Seconds must be fewer than are in a day
+
+        Time secConverter = new Time();
+
+        secConverter.hour = 0;
+        secConverter.minute = 0;
+        secConverter.second = 0;
+
+        secConverter.second = improperSeconds;
+        secConverter.normalize(true);
+
+        String hours = String.valueOf(secConverter.hour);
+        String minutes = String.valueOf(secConverter.minute);
+        String seconds = String.valueOf(secConverter.second);
+
+        if (seconds.length() < 2) {
+            seconds = "0" + seconds;
+        }
+        if (minutes.length() < 2) {
+            minutes = "0" + minutes;
+        }
+        if (hours.length() < 2) {
+            hours = "0" + hours;
+        }
+
+        String timeString = hours + ":" + minutes + ":" + seconds;
+        return timeString;
     }
 
 }

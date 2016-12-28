@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">My Lego Creationary</string>
     <string name="action_reglas">Reglas</string>
+    <string name="break_timer_title">break_timer_title</string>
 </resources>
